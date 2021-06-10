@@ -1,0 +1,88 @@
+DROP DATABASE IF EXISTS mcq;
+
+CREATE DATABASE IF NOT EXISTS mcq;
+USE mcq;
+# -----------------------------------------------------------------------------
+#       TABLE : ROLES
+# -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ROLES
+  (
+    ID_ROLE INTEGER NOT NULL AUTO_INCREMENT,
+    ROLE_TITLE CHAR(10) NOT NULL,
+    BY_DEFAULT BOOLEAN NOT NULL,
+    PRIMARY KEY (ID_ROLE)
+   )
+;
+# -----------------------------------------------------------------------------
+#       TABLE : USERS
+# -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS USERS
+(
+  ID_USER INTEGER NOT NULL AUTO_INCREMENT,
+  FIRST_NAME VARCHAR(128) NOT NULL,
+  LAST_NAME VARCHAR(128) NOT NULL,
+  EMAIL VARCHAR(128) NOT NULL,
+  IF_TEACHER BOOLEAN NOT NULL,
+  ID_ROLE INT NOT NULL,
+  PRIMARY KEY (ID_USER)
+)
+;
+# -----------------------------------------------------------------------------
+#       TABLE : QUESTIONS
+# -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS QUESTIONS
+(
+  ID_QUESTION INTEGER NOT NULL AUTO_INCREMENT,
+  TEXT_QUESTION TEXT NOT NULL,
+  DATE_QUESTION DATETIME NOT NULL,
+  DIFFICULTY_LEVEL TINYINT NOT NULL,
+  TEACHER INTEGER NOT NULL,
+  PRIMARY KEY (ID_QUESTION)
+)
+;
+
+# -----------------------------------------------------------------------------
+#       TABLE : ANSWER_CHOICES
+# -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ANSWER_CHOICES
+(
+  ID_CHOICE INTEGER NOT NULL AUTO_INCREMENT,
+  ID_QUESTION INTEGER NOT NULL,
+  CHOICE TEXT NOT NULL,
+  SI_CORRECT BOOLEAN NOT NULL,
+  PRIMARY KEY (ID_CHOICE,ID_QUESTION)
+);
+
+ # -----------------------------------------------------------------------------
+#       TABLE : TICK
+# -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS TICK
+( 
+  ID_STUDENT INTEGER NOT NULL,
+  ID_CHOICE INTEGER NOT NULL,
+  DATE_ANSWER DATETIME NOT NULL,
+  IF_CORRECT_CHOICE BOOLEAN NOT NULL,
+  PRIMARY KEY (ID_STUDENT,ID_CHOICE)
+ ); 
+# -----------------------------------------------------------------------------
+#       CREATION DES REFERENCES DE TABLE
+# -----------------------------------------------------------------------------
+ALTER TABLE USERS
+    ADD CONSTRAINT FK_USER_ROLE FOREIGN KEY(ID_ROLE)
+        REFERENCES ROLES (ID_ROLE); 
+ 
+ALTER TABLE QUESTIONS
+     ADD CONSTRAINT FK_QUESTION_USER FOREIGN KEY(TEACHER)
+         REFERENCES USERS (ID_USER);
+
+ALTER TABLE TICK
+      ADD CONSTRAINT FK_TICK_USER FOREIGN KEY(ID_STUDENT)
+          REFERENCES USERS (ID_USER);
+
+ALTER TABLE TICK
+      ADD CONSTRAINT FK_TICK_CHOICE FOREIGN KEY(ID_CHOICE)
+          REFERENCES ANSWER_CHOICES (ID_CHOICE);
+
+ALTER TABLE ANSWER_CHOICES
+      ADD CONSTRAINT FK_CHOICE_QUESTION FOREIGN KEY(ID_QUESTION)
+          REFERENCES QUESTIONS (ID_QUESTION);
